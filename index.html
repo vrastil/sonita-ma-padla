@@ -1,0 +1,107 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Countdown</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: white;
+      transition: background-image 1s ease;
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: -1;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 2rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      z-index: 1;
+    }
+    #countdown {
+      font-size: 3.5rem;
+      font-weight: bold;
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 1.5rem 2.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+      z-index: 1;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    }
+    #countdown.finished {
+      background-color: rgba(76, 175, 80, 0.7);
+      color: white;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <h1 id="title">Soníto drž se!</h1>
+  <div id="countdown"></div>
+  <script>
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetDateParam = urlParams.get('targetDate');
+    const targetTimeParam = urlParams.get('targetTime') || '18:00:00';
+    const overrideParam = urlParams.get('over') === 'yes';
+
+    // Use parameter or default date
+    const endDate = targetDateParam
+      ? new Date(`${targetDateParam}T${targetTimeParam}+02:00`)
+      : new Date("2025-07-31T18:00:00+02:00");
+
+    const countdown = document.getElementById("countdown");
+    const title = document.getElementById("title");
+    const body = document.body;
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = endDate - now;
+
+      // Check for override parameter or if time is up
+      if (overrideParam || diff <= 0) {
+        countdown.textContent = "Máš padla!";
+        countdown.classList.add("finished");
+        title.textContent = "Soníto zvládla jsi to!";
+        body.style.backgroundImage = "url('img/party.jpg')";
+        return;
+      }
+
+      body.style.backgroundImage = "url('img/work.jpg')";
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / 1000 / 60) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+      countdown.textContent = `Už jen ${days}d ${hours}h ${minutes}m ${seconds}s!`;
+    }
+
+    // Initial call
+    updateCountdown();
+
+    // Set interval
+    setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>
